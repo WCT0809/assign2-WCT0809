@@ -14,6 +14,8 @@ final int BUTTON_BOTTOM = 420;
 final int BUTTON_LEFT = 248;
 final int BUTTON_RIGHT = 392;                                                             //BUTTON status
 
+int sunX;
+int sunY;                                                                                 //about sun Location
 int soldierX, soldierY, soldierSpeedX;
 int soldierLocationX = floor(random(7)+1);
 int soldierLocationY = floor(random(4)+1);                                                //about soldier Location
@@ -59,6 +61,8 @@ void setup() {
   cabbageY=80+cabbageLocationY * 80;                                                    //cabbage move
   groundhogX = 320;
   groundhogY = 80;                                                                      //groundhog First Location
+  sunX = 590;
+  sunY= 50;                                                                             //about x,y for sun
 }
 
 void draw() {
@@ -74,9 +78,18 @@ void draw() {
     break;
     case GAME_RUN:
       image(bg,0,0,640,480);
+      colorMode(RGB);
+      fill(124,204,25);
+      noStroke();
+      rect(0,145,640,15);
+      colorMode(RGB);
+      fill(253,184,19);
+      stroke(255,255,0);
+      strokeWeight(5);
+      ellipse(sunX,sunY,120,120);             //draw sun x,y size
       image(soil,0,160,640,320);
       image(soldier, soldierX, soldierY);
-      println(isActive,"-",groundhogX,"-",groundhogY);                                                      //println groundhog Location
+      //println(isActive,"-",groundhogX,"-",groundhogY);                                                      //println groundhog Location
       if(drawgroundhogIdle) image(groundhogIdle, groundhogX, groundhogY);                                   //roundhogIdle status
       if(drawgroundhogDown) {
         if(soldierCollision==true) {
