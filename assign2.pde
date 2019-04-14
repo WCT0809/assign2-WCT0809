@@ -17,17 +17,22 @@ final int BUTTON_RIGHT = 392;                                                   
 int sunX;
 int sunY;                                                                                 //about sun Location
 int soldierX, soldierY, soldierSpeedX;
-int soldierLocationX = floor(random(7)+1);
-int soldierLocationY = floor(random(4)+1);                                                //about soldier Location
+int soldierLocationX = floor(random(8));
+int soldierLocationY = floor(random(1,5));                                                //about soldier Location
 boolean soldierCollision=false;                                                           //soldier Collision switch
 
 int cabbageX, cabbageY;
-int cabbageLocationX = floor(random(7)+1);
-int cabbageLocationY = floor(random(4)+1);                                                //about cabbage Location
+int cabbageLocationX = floor(random(8));
+int cabbageLocationY = floor(random(1,5));                                                //about cabbage Location
 boolean drawCabbage=true;                                                                 //cabbage Collision switch
 
-int groundhogX, groundhogY;                                                               //about groundhog Location
-boolean drawgroundhogIdle=true, drawgroundhogDown, drawgroundhogLeft, drawgroundhogRight; //drawgroundhog status switch
+int groundhogX, groundhogY;//about groundhog Location
+final int groundhog_IDLE = 0;
+final int groundhog_LEFT = 1;
+final int groundhog_RIGHT = 2;
+final int groundhog_DOWN = 3;
+int groundhogState = groundhog_IDLE;
+
 int HP=2,i,nowframeCount;                                                                 //frameCount about groundhog*
 boolean upPressed, downPressed, rightPressed, leftPressed, isActive=false;                //about groundhog control
 
@@ -89,123 +94,56 @@ void draw() {
       ellipse(sunX,sunY,120,120);             //draw sun x,y size
       image(soil,0,160,640,320);
       image(soldier, soldierX, soldierY);
-      //println(isActive,"-",groundhogX,"-",groundhogY);                                                      //println groundhog Location
-      if(drawgroundhogIdle) image(groundhogIdle, groundhogX, groundhogY);                                   //roundhogIdle status
-      if(drawgroundhogDown) {
-        if(soldierCollision==true) {
-           drawgroundhogDown=false;
-           drawgroundhogIdle=true;
-           soldierCollision=false;
-           groundhogX = 320;
-           groundhogY = 80;
-           isActive=false;
-        }
-        else {
-          if((frameCount-nowframeCount)<=15) {
-            if ((frameCount-nowframeCount)%3==0)
-              groundhogY+=16;
-            image(groundhogDown, groundhogX, groundhogY);                                                   //groundhogDown status
-          }
-          else {
-            isActive=false;
-            drawgroundhogDown=false;
-            drawgroundhogIdle=true;
-          }
-        }
+
+      //println(isActive,"-",groundhogX,"-",groundhogY);      //println groundhog Location
+      //println(nowframeCount);
+
+      if (isActive==false) groundhogState=groundhog_IDLE;
+      
+      switch(groundhogState) {
+        case groundhog_IDLE:
+          image(groundhogIdle, groundhogX, groundhogY); 
+        break;
+        case groundhog_LEFT:
+            if((frameCount-nowframeCount)<=15) {
+              if ((frameCount-nowframeCount)%3==0)
+                groundhogX-=16;
+              image(groundhogLeft, groundhogX, groundhogY);                                                  //groundhogLeft status
+            }
+            else {
+              isActive=false;
+            }
+        break;
+        case groundhog_RIGHT:
+            if((frameCount-nowframeCount)<=15) {
+              if ((frameCount-nowframeCount)%3==0)
+                groundhogX+=16;
+              image(groundhogRight, groundhogX, groundhogY);                                                //groundhogRight status
+            }
+            else {
+              isActive=false;
+            }
+        break;
+        case groundhog_DOWN:
+            if((frameCount-nowframeCount)<=15) {
+              if ((frameCount-nowframeCount)%3==0)
+                groundhogY+=16;
+              image(groundhogDown, groundhogX, groundhogY);                                                   //groundhogDown status
+            }
+            else {
+              isActive=false;
+            }
+        break;
       }
-      if(drawgroundhogLeft) {
-        if(soldierCollision==true) {
-           drawgroundhogLeft=false;
-           drawgroundhogIdle=true;
-           soldierCollision=false;
-           isActive=false;
-           groundhogX = 320;
-           groundhogY = 80;
-        }
-        else {
-          if((frameCount-nowframeCount)<=15) {
-            if ((frameCount-nowframeCount)%3==0)
-              groundhogX-=16;
-            image(groundhogLeft, groundhogX, groundhogY);                                                  //groundhogLeft status
-          }
-          else {
-            isActive=false;
-            drawgroundhogLeft=false;
-            drawgroundhogIdle=true;
-          }
-        }
-      }
-      if(drawgroundhogRight) {
-        if(soldierCollision==true) {
-           drawgroundhogRight=false;
-           drawgroundhogIdle=true;
-           soldierCollision=false;
-           groundhogX = 320;
-           groundhogY = 80;
-           isActive=false;
-        }
-        else {
-          if((frameCount-nowframeCount)<=15) {
-            if ((frameCount-nowframeCount)%3==0)
-              groundhogX+=16;
-            image(groundhogRight, groundhogX, groundhogY);                                                //groundhogRight status
-          }
-          else {
-            isActive=false;
-            drawgroundhogRight=false;
-            drawgroundhogIdle=true;
-          }
-        }
-      }
+      
       if(drawCabbage) image(cabbage, cabbageX, cabbageY);                                                 //cabbage status
+      
       for(i=0; i<HP; i++)
         image(life,10+60*i,10,50,51);                                                                     //life status
       
       soldierX+=soldierSpeedX;                                                                            //soldier move
       soldierX %= 640;                                                                                    //soldier move cycle
 
-      if(downPressed && !isActive){                                                                       //groundhog moving frameCount image condition
-        isActive=true;
-        drawgroundhogIdle=false;
-        drawgroundhogDown=true;
-        if(groundhogY >= height-80) {
-          groundhogY=height-80;
-          isActive=false;
-        }
-        else {
-          drawgroundhogIdle=false;
-          drawgroundhogDown=true;
-          nowframeCount=frameCount;
-        }
-      }
-      if(leftPressed && !isActive){
-        isActive=true;
-        drawgroundhogIdle=false;
-        drawgroundhogLeft=true;
-        if(groundhogX <= 0) {
-          groundhogX=0;
-          isActive=false;
-        }
-        else {
-          drawgroundhogIdle=false;
-          drawgroundhogLeft=true;
-          nowframeCount=frameCount;
-        }
-      }
-      if(rightPressed && !isActive){
-        isActive=true;
-        drawgroundhogIdle=false;
-        drawgroundhogRight=true;
-        if(groundhogX >= width-80) {
-          groundhogX = width - 80;
-          isActive=false;
-        }
-        else {
-          drawgroundhogIdle=false;
-          drawgroundhogRight=true;
-          nowframeCount=frameCount;
-        }           
-      }
       //Cabbage collision detect
       if(drawCabbage) {                                                                                                 //Cabbage collision condition
         if(groundhogX<cabbageX+80 && groundhogX+80>cabbageX && groundhogY<cabbageY+80 && groundhogY+80>cabbageY) {
@@ -217,16 +155,13 @@ void draw() {
       //soldier collision detect
       if(groundhogX<soldierX+80 && groundhogX+80>soldierX && groundhogY<soldierY+80 && groundhogY+80>soldierY) {        //soldier collision condition
         soldierCollision=true;
-        drawgroundhogIdle=true;
-        drawgroundhogLeft=false;
-        drawgroundhogRight=false;
-        drawgroundhogDown=false;
+        groundhogState = groundhog_IDLE;
         isActive=false;
         groundhogX = 320;
         groundhogY = 80;
         HP--;                                                                                                            //cut life
       }
-      if(HP<1) gameState=GAME_OVER;                                                                                      //GAME_OVER condition
+      if(HP<1) gameState = GAME_OVER;                                                                                      //GAME_OVER condition
     break;
     case GAME_OVER:                                                                                                      //GAME_OVER status
       image(gameover, 0, 0);
@@ -239,18 +174,35 @@ void draw() {
   }
 }
 
-void keyPressed(){                                                                                                       //path control
-  switch(keyCode){
-    case DOWN:
-    downPressed = true;
-    break;
-    case RIGHT:
-    rightPressed = true;
-    break;
-    case LEFT:
-    leftPressed = true;
-    break;
-  }
+void keyPressed(){  //path control
+    if (!isActive) {
+      switch(keyCode){
+        case DOWN:
+        if (groundhogY < height-80) {
+          isActive = true;
+          groundhogState = groundhog_DOWN;
+          nowframeCount=frameCount;
+        }
+        else groundhogState = groundhog_IDLE;
+        break;
+        case RIGHT:
+        if (groundhogX < width-80) {
+          isActive = true;
+          groundhogState = groundhog_RIGHT;
+          nowframeCount=frameCount;
+        }
+        else groundhogState = groundhog_IDLE;
+        break;
+        case LEFT:
+        if (groundhogX > 0) {
+          isActive = true;
+          groundhogState = groundhog_LEFT;
+          nowframeCount=frameCount;
+        }
+        else groundhogState = groundhog_IDLE;
+        break;
+      }
+    }
 }
 
 void keyReleased(){
